@@ -18,6 +18,7 @@ package com.example.androiddevchallenge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,14 +33,16 @@ class TimerViewModel : ViewModel() {
     var time by mutableStateOf(0.toLong())
     private var _started = MutableLiveData(false)
     private var _paused = MutableLiveData(false)
-    private var _h = MutableLiveData("")
-    private var _m = MutableLiveData("")
-    private var _s = MutableLiveData("")
+    private var _h = MutableLiveData("00")
+    private var _m = MutableLiveData("00")
+    private var _s = MutableLiveData("00")
+    private var _rgb = MutableLiveData(Color.Green)
     var started: LiveData<Boolean> = _started
     var paused: LiveData<Boolean> = _paused
     var hours: LiveData<String> = _h
     var minutes: LiveData<String> = _m
     var seconds: LiveData<String> = _s
+    var color : LiveData<Color> = _rgb
 
     private fun newTimer(
         timeInMs: Long
@@ -48,6 +51,7 @@ class TimerViewModel : ViewModel() {
         _h.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toHours(timeInMs))
         _m.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toMinutes(timeInMs), 60)
         _s.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toSeconds(timeInMs), 60)
+        _rgb.value = Color.Green
         timer = MyTimer(
             timeInMs,
             1000,
@@ -55,10 +59,14 @@ class TimerViewModel : ViewModel() {
                 _h.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toHours(remaining))
                 _m.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toMinutes(remaining), 60)
                 _s.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toSeconds(remaining), 60)
+                getRGB()
             },
             onFinished = {
                 _started.value = false
                 _paused.value = false
+                timeString = ""
+                time = 0
+                _rgb.value = Color.Green
             }
         )
     }
@@ -95,6 +103,7 @@ class TimerViewModel : ViewModel() {
         if (_paused.value == true) {
             timer.start()
             _paused.value = false
+            _rgb.value = Color.Green
         }
     }
 
@@ -109,5 +118,13 @@ class TimerViewModel : ViewModel() {
             timer.start()
             _paused.value = false
         }
+    }
+
+    fun getRGB() {
+        val percent = timer.timeLeft * 100.0f / time
+        val g = 255 * percent / 100
+        val r = 255 - g
+        _rgb.value = Color(r.toInt(), g.toInt(), 0, 255)
+
     }
 }

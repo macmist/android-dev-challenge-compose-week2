@@ -15,6 +15,18 @@
  */
 package com.example.androiddevchallenge.ui
 
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,12 +39,15 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.TimerViewModel
 
+@ExperimentalAnimationApi
 @Composable
 fun TimerScreen(timerViewModel: TimerViewModel) {
     val hours: String by timerViewModel.hours.observeAsState("00")
@@ -52,12 +67,14 @@ fun TimerScreen(timerViewModel: TimerViewModel) {
     )
 }
 
+@ExperimentalAnimationApi
 @Preview
 @Composable
 fun TimerScreenPreview() {
     TimerScreen(TimerViewModel())
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun TimerComponent(
     hours: String,
@@ -68,39 +85,79 @@ fun TimerComponent(
     paused: Boolean,
     timerViewModel: TimerViewModel
 ) {
+    val color: Color by timerViewModel.color.observeAsState(Color.Green)
+    val colAnim : Color by animateColorAsState(targetValue = color)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .background(color = colAnim)
+
     ) {
         TimeLeft(hours = hours, minutes = minutes, seconds = seconds)
-        if (showInputBox)
-            InputBox(itemClicked = { item -> timerViewModel.addDigitToTime(item.toInt()) })
-        else
-            ControlButtons(
-                paused = paused,
-                onPause = { timerViewModel.pauseTimer() },
-                onResume = { timerViewModel.resumeTimer() },
-                onRestart = { timerViewModel.restartTimer() }
-            )
+        InputBox(
+            itemClicked = { item -> timerViewModel.addDigitToTime(item.toInt()) },
+            visible = showInputBox
+        )
+
+        ControlButtons(
+            visible = !showInputBox,
+            paused = paused,
+            onPause = { timerViewModel.pauseTimer() },
+            onResume = { timerViewModel.resumeTimer() },
+            onRestart = { timerViewModel.restartTimer() }
+        )
         if (showStart)
             ActionButton(text = "Start", onClick = { timerViewModel.startTimer() })
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun ControlButtons(
+    visible: Boolean,
     paused: Boolean,
     onPause: () -> Unit,
     onResume: () -> Unit,
     onRestart: () -> Unit
 ) {
-    if (paused) {
-        ActionButton(text = "Resume", onClick = onResume)
-        ActionButton(text = "Restart", onClick = onRestart)
-    } else
-        ActionButton(text = "Pause", onClick = onPause)
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically(
+            initialOffsetY = {-10}
+        ) + expandVertically(
+            expandFrom = Alignment.Top
+        ) + fadeIn(initialAlpha = 0.3f),
+        exit = slideOutVertically() + shrinkVertically() + fadeOut()
+    ) {
+            AnimatedVisibility(
+                visible = paused,
+                enter = slideInVertically(
+                    initialOffsetY = {-10}
+                ) + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(initialAlpha = 0.3f),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    ActionButton(text = "Resume", onClick = onResume)
+                    ActionButton(text = "Restart", onClick = onRestart)
+                }
+            }
+            AnimatedVisibility(
+                visible = !paused,
+                enter = slideInVertically(
+                    initialOffsetY = {-10}
+                ) + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(initialAlpha = 0.3f),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                ActionButton(text = "Pause", onClick = onPause)
+            }
+        }
 }
 
 @Composable
@@ -133,24 +190,38 @@ fun NumberBoxRowPreview() {
     InputBoxRow(listOf("1", "2", "3")) { {} }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun InputBox(
-    itemClicked: (String) -> Unit
+    itemClicked: (String) -> Unit,
+    visible: Boolean
 ) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically(
+            initialOffsetY = {40}
+        ) + expandVertically(
+            expandFrom = Alignment.Bottom
+        ) + fadeIn(initialAlpha = 0.3f),
+        exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
-        InputBoxRow(items = listOf("1", "2", "3"), itemClicked = itemClicked)
-        InputBoxRow(items = listOf("4", "5", "6"), itemClicked = itemClicked)
-        InputBoxRow(items = listOf("7", "8", "9"), itemClicked = itemClicked)
-        InputBoxRow(items = listOf("0"), itemClicked = itemClicked)
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            InputBoxRow(items = listOf("1", "2", "3"), itemClicked = itemClicked)
+            InputBoxRow(items = listOf("4", "5", "6"), itemClicked = itemClicked)
+            InputBoxRow(items = listOf("7", "8", "9"), itemClicked = itemClicked)
+            InputBoxRow(items = listOf("0"), itemClicked = itemClicked)
+        }
     }
+
 }
+@ExperimentalAnimationApi
 @Preview
 @Composable
 fun InputBoxPreview() {
-    InputBox(itemClicked = { /*TODO*/ })
+    InputBox(itemClicked = { /*TODO*/ }, true)
 }
 
 @Composable
@@ -159,7 +230,6 @@ fun TimePart(
     time: String,
     unit: String
 ) {
-
     Row(
         verticalAlignment = Alignment.Bottom,
         modifier = modifier
@@ -172,7 +242,7 @@ fun TimePart(
         Text(
             text = unit,
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.secondary,
+            color = MaterialTheme.colors.primaryVariant,
             modifier = Modifier.padding(bottom = 10.dp)
         )
     }
@@ -187,10 +257,12 @@ fun TimePartPreview() {
 fun TimeLeft(
     hours: String,
     minutes: String,
-    seconds: String
+    seconds: String,
 ) {
     Row(
-        modifier = Modifier.padding(10.dp),
+        modifier = Modifier
+            .padding(10.dp)
+            .animateContentSize(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         TimePart(time = hours, unit = "h")
