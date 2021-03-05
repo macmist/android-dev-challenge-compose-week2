@@ -12,7 +12,9 @@ Week 2 of Jetpack Compose #AndroidDevChallenge featuring a timer on one screen
 ## :bulb: Motivation and Context
 <!--- Optionally point readers to interesting parts of your submission. -->
 <!--- What are you especially proud of? -->
-
+This time I really took my time and tried to play around with everything.
+It's still simple but I'm glad I managed to add some animations, as well as a colored background
+that changes depending on the completion.
 
 ## :camera_flash: Screenshots
 <!-- You can add more screenshots here if you like -->
