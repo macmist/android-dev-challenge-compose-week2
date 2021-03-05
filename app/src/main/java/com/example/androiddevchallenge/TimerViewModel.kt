@@ -1,16 +1,33 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.androiddevchallenge
 
-import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import java.util.concurrent.TimeUnit
 
 class TimerViewModel : ViewModel() {
-    var timer : MyTimer = MyTimer(100,
-        100, {}, {})
+    var timer: MyTimer = MyTimer(
+        100,
+        100, {}, {}
+    )
     private var timeString by mutableStateOf("")
     var time by mutableStateOf(0.toLong())
     private var _started = MutableLiveData(false)
@@ -20,19 +37,21 @@ class TimerViewModel : ViewModel() {
     private var _s = MutableLiveData("")
     var started: LiveData<Boolean> = _started
     var paused: LiveData<Boolean> = _paused
-    var hours : LiveData<String> = _h
-    var minutes : LiveData<String> = _m
-    var seconds : LiveData<String> = _s
+    var hours: LiveData<String> = _h
+    var minutes: LiveData<String> = _m
+    var seconds: LiveData<String> = _s
 
     private fun newTimer(
-        timeInMs: Long) {
+        timeInMs: Long
+    ) {
         timer.cancel()
         _h.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toHours(timeInMs))
         _m.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toMinutes(timeInMs), 60)
         _s.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toSeconds(timeInMs), 60)
-        timer = MyTimer(timeInMs,
+        timer = MyTimer(
+            timeInMs,
             1000,
-            onUpdate = {remaining ->
+            onUpdate = { remaining ->
                 _h.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toHours(remaining))
                 _m.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toMinutes(remaining), 60)
                 _s.value = MyTimer.getFullTimeString(TimeUnit.MILLISECONDS.toSeconds(remaining), 60)
@@ -40,7 +59,8 @@ class TimerViewModel : ViewModel() {
             onFinished = {
                 _started.value = false
                 _paused.value = false
-            })
+            }
+        )
     }
 
     fun addDigitToTime(digit: Int) {
@@ -57,7 +77,7 @@ class TimerViewModel : ViewModel() {
         if (tmp > 99) { // max to 99h59m59s
             tmp = 99
             mins = 59
-            secs  =  59
+            secs = 59
         }
         val finalTime = (tmp * h + mins * m + secs * s) * 1000
         time = finalTime
