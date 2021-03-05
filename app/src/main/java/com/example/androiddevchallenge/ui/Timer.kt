@@ -15,7 +15,6 @@
  */
 package com.example.androiddevchallenge.ui
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
@@ -39,7 +38,6 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -86,7 +84,7 @@ fun TimerComponent(
     timerViewModel: TimerViewModel
 ) {
     val color: Color by timerViewModel.color.observeAsState(Color.Green)
-    val colAnim : Color by animateColorAsState(targetValue = color)
+    val colAnim: Color by animateColorAsState(targetValue = color)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -126,38 +124,38 @@ fun ControlButtons(
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically(
-            initialOffsetY = {-10}
+            initialOffsetY = { -10 }
         ) + expandVertically(
             expandFrom = Alignment.Top
         ) + fadeIn(initialAlpha = 0.3f),
         exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
-            AnimatedVisibility(
-                visible = paused,
-                enter = slideInVertically(
-                    initialOffsetY = {-10}
-                ) + expandVertically(
-                    expandFrom = Alignment.Top
-                ) + fadeIn(initialAlpha = 0.3f),
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                Column {
-                    ActionButton(text = "Resume", onClick = onResume)
-                    ActionButton(text = "Restart", onClick = onRestart)
-                }
-            }
-            AnimatedVisibility(
-                visible = !paused,
-                enter = slideInVertically(
-                    initialOffsetY = {-10}
-                ) + expandVertically(
-                    expandFrom = Alignment.Top
-                ) + fadeIn(initialAlpha = 0.3f),
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                ActionButton(text = "Pause", onClick = onPause)
+        AnimatedVisibility(
+            visible = paused,
+            enter = slideInVertically(
+                initialOffsetY = { -10 }
+            ) + expandVertically(
+                expandFrom = Alignment.Top
+            ) + fadeIn(initialAlpha = 0.3f),
+            exit = slideOutVertically() + shrinkVertically() + fadeOut()
+        ) {
+            Column {
+                ActionButton(text = "Resume", onClick = onResume)
+                ActionButton(text = "Restart", onClick = onRestart)
             }
         }
+        AnimatedVisibility(
+            visible = !paused,
+            enter = slideInVertically(
+                initialOffsetY = { -10 }
+            ) + expandVertically(
+                expandFrom = Alignment.Top
+            ) + fadeIn(initialAlpha = 0.3f),
+            exit = slideOutVertically() + shrinkVertically() + fadeOut()
+        ) {
+            ActionButton(text = "Pause", onClick = onPause)
+        }
+    }
 }
 
 @Composable
@@ -199,7 +197,7 @@ fun InputBox(
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically(
-            initialOffsetY = {40}
+            initialOffsetY = { 40 }
         ) + expandVertically(
             expandFrom = Alignment.Bottom
         ) + fadeIn(initialAlpha = 0.3f),
@@ -215,7 +213,6 @@ fun InputBox(
             InputBoxRow(items = listOf("0"), itemClicked = itemClicked)
         }
     }
-
 }
 @ExperimentalAnimationApi
 @Preview

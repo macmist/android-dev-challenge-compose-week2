@@ -42,7 +42,7 @@ class TimerViewModel : ViewModel() {
     var hours: LiveData<String> = _h
     var minutes: LiveData<String> = _m
     var seconds: LiveData<String> = _s
-    var color : LiveData<Color> = _rgb
+    var color: LiveData<Color> = _rgb
 
     private fun newTimer(
         timeInMs: Long
@@ -125,6 +125,5 @@ class TimerViewModel : ViewModel() {
         val g = 255 * percent / 100
         val r = 255 - g
         _rgb.value = Color(r.toInt(), g.toInt(), 0, 255)
-
     }
 }
